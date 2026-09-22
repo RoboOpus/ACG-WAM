@@ -1,34 +1,21 @@
 'use strict';
 
-function setVideo(video, src, poster, label) {
-  const wasPlaying = !video.paused;
-  video.pause();
-  video.querySelector('source').src = src;
-  video.querySelector('a').href = src;
-  video.poster = poster;
-  if (label) video.setAttribute('aria-label', label);
-  video.load();
-  if (wasPlaying) video.play().catch(() => {});
-}
-
-document.querySelectorAll('[data-real-select]').forEach(select => {
-  select.addEventListener('change', () => {
-    const option = select.selectedOptions[0];
-    const card = select.closest('[data-real-card]');
-    setVideo(card.querySelector('video'), option.value, option.dataset.poster,
-      `${card.querySelector('h3').textContent} — ${option.textContent}`);
-  });
-});
-
 let scene = 'clean';
-function updateSimulation(card) {
-  const episode = card.querySelector('[data-episode]').value;
-  const prefix = `${card.dataset.base}/demo_${scene}/episode${episode}`;
-  const label = scene === 'clean' ? 'Clean' : 'Randomized';
-  setVideo(card.querySelector('video'), `${prefix}.mp4`, `${prefix}.jpg`,
-    `${card.dataset.title} — ${label}, episode ${episode}`);
-  card.querySelector('[data-scene-label]').textContent = label;
-  card.querySelector('[data-score]').textContent = `${label} success rate: ${card.dataset[scene]}%`;
+let episode = '0';
+function updateSimulation() {
+  document.querySelectorAll('[data-sim-card]').forEach(card => {
+    const video = card.querySelector('video');
+    const wasPlaying = !video.paused;
+    const prefix = `${card.dataset.base}/demo_${scene}/episode${episode}`;
+    video.pause();
+    video.querySelector('source').src = `${prefix}.mp4`;
+    video.querySelector('a').href = `${prefix}.mp4`;
+    video.poster = `${prefix}.jpg`;
+    video.setAttribute('aria-label', `${card.dataset.title} — ${scene}, demonstration ${Number(episode) + 1}`);
+    video.load();
+    if (wasPlaying) video.play().catch(() => {});
+  });
+  document.getElementById('scene-status').textContent = `${scene === 'clean' ? 'Clean' : 'Randomized'} scenes, demonstration ${Number(episode) + 1}`;
 }
 document.querySelectorAll('[data-scene]').forEach(button => {
   button.addEventListener('click', () => {
@@ -37,20 +24,23 @@ document.querySelectorAll('[data-scene]').forEach(button => {
     document.querySelectorAll('[data-scene]').forEach(item => {
       item.setAttribute('aria-pressed', String(item.dataset.scene === scene));
     });
-    document.querySelectorAll('[data-sim-card]').forEach(updateSimulation);
-    document.getElementById('scene-status').textContent = `Showing ${scene} scenes · original recordings`;
+    updateSimulation();
   });
 });
-document.querySelectorAll('[data-episode]').forEach(select => {
-  select.addEventListener('change', () => updateSimulation(select.closest('[data-sim-card]')));
+document.querySelectorAll('[data-episode]').forEach(button => {
+  button.addEventListener('click', () => {
+    if (episode === button.dataset.episode) return;
+    episode = button.dataset.episode;
+    document.querySelectorAll('[data-episode]').forEach(item => {
+      item.setAttribute('aria-pressed', String(item.dataset.episode === episode));
+    });
+    updateSimulation();
+  });
 });
 
-// Pause off-screen players without restarting videos paused by the reader.
 if ('IntersectionObserver' in window) {
   const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) entry.target.pause();
-    });
+    entries.forEach(entry => { if (!entry.isIntersecting) entry.target.pause(); });
   }, { threshold: 0.05 });
   document.querySelectorAll('video').forEach(video => observer.observe(video));
 }

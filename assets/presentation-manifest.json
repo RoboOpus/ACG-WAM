@@ -1,0 +1,32 @@
+{
+  "figure": {
+    "source": "figure_architecture_v4.pdf",
+    "svg": "assets/images/architecture.svg",
+    "pdf": "assets/images/architecture.pdf",
+    "source_sha256": "21691d9eff539290be288d11da204480410c5db0d56d183cc7a410f7ff0896ad",
+    "export": "Vector paths and embedded original images; fonts outlined; manuscript crop."
+  },
+  "overview_video": {
+    "source": "ACG-WAM_720p.mp4",
+    "src": "assets/videos/project-overview.mp4",
+    "poster": "assets/videos/project-overview.jpg",
+    "source_sha256": "a16e31801af1e8042144966521fe849a1b468cb311a2cf3f6f8e42c2f35aeb44",
+    "bytes": 16450269,
+    "processing": "Stream copy with original H.264 video and AAC audio; MP4 faststart."
+  },
+  "real_demo_selection": {
+    "Bimanual Fruit Placement": [
+      "1/IMG_6668.mp4",
+      "1/IMG_6670.mp4"
+    ],
+    "Block Stacking": {
+      "robot_left_arm": "2/IMG_6661.mp4",
+      "robot_right_arm": "2/IMG_6665.mp4"
+    },
+    "Toy Placement into a Cup": {
+      "robot_left_arm": "3/IMG_6651.mp4",
+      "robot_right_arm": "3/IMG_6649.mp4"
+    },
+    "arm_convention": "Left/right is from the robot perspective, opposite the frontal camera view."
+  }
+}
