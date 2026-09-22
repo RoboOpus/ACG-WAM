@@ -2,10 +2,14 @@
 
 let scene = 'clean';
 let episode = '0';
+const videos = [...document.querySelectorAll('video')];
+const playVideo = video => {
+  if (!document.hidden && video.dataset.visible !== 'false') video.play().catch(() => {});
+};
+videos.forEach(video => { video.muted = true; });
 function updateSimulation() {
   document.querySelectorAll('[data-sim-card]').forEach(card => {
     const video = card.querySelector('video');
-    const wasPlaying = !video.paused;
     const prefix = `${card.dataset.base}/demo_${scene}/episode${episode}`;
     video.pause();
     video.querySelector('source').src = `${prefix}.mp4`;
@@ -13,7 +17,7 @@ function updateSimulation() {
     video.poster = `${prefix}.jpg`;
     video.setAttribute('aria-label', `${card.dataset.title} — ${scene}, demonstration ${Number(episode) + 1}`);
     video.load();
-    if (wasPlaying) video.play().catch(() => {});
+    playVideo(video);
   });
   document.getElementById('scene-status').textContent = `${scene === 'clean' ? 'Clean' : 'Randomized'} scenes, demonstration ${Number(episode) + 1}`;
 }
@@ -40,12 +44,18 @@ document.querySelectorAll('[data-episode]').forEach(button => {
 
 if ('IntersectionObserver' in window) {
   const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => { if (!entry.isIntersecting) entry.target.pause(); });
+    entries.forEach(entry => {
+      entry.target.dataset.visible = String(entry.isIntersecting);
+      if (entry.isIntersecting) playVideo(entry.target);
+      else entry.target.pause();
+    });
   }, { threshold: 0.05 });
-  document.querySelectorAll('video').forEach(video => observer.observe(video));
+  videos.forEach(video => observer.observe(video));
+} else {
+  videos.forEach(playVideo);
 }
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) document.querySelectorAll('video').forEach(video => video.pause());
+  videos.forEach(video => document.hidden ? video.pause() : playVideo(video));
 });
 
 document.getElementById('copy-citation').addEventListener('click', async () => {

@@ -1,4 +1,4 @@
-"""Export vector Fig. 2 and remux the project video without re-encoding.
+"""Export vector Figs. 1 and 2 and remux the project video without re-encoding.
 
 Requires pymupdf and imageio-ffmpeg. Original source files are never modified.
 """
@@ -23,43 +23,45 @@ args = parser.parse_args()
 repo = Path(__file__).resolve().parents[1]
 images = repo/'assets/images'
 images.mkdir(parents=True, exist_ok=True)
-with pymupdf.open(args.figure) as doc:
-    page = doc[0]
-    # Match the manuscript's trim=56bp 67bp 56bp 59bp, without rasterizing.
-    page.set_cropbox(pymupdf.Rect(56,59,page.rect.width-56,page.rect.height-67))
-    svg = page.get_svg_image(text_as_path=True)
-    # Bake each raster soft mask into PNG alpha. Keep all text/linework vector;
-    # avoid renderer-dependent SVG mask handling around the robot and icons.
-    ns = 'http://www.w3.org/2000/svg'
-    href = '{http://www.w3.org/1999/xlink}href'
-    ET.register_namespace('', ns)
-    ET.register_namespace('xlink','http://www.w3.org/1999/xlink')
-    tree = ET.fromstring(svg)
-    ids = {node.get('id'):node for node in tree.iter() if node.get('id')}
-    for group in tree.iter('{'+ns+'}g'):
-        if 'mask' not in group.attrib:
-            continue
-        mask = ids[group.get('mask')[5:-1]]
-        def image_node(container):
-            leaves = [node for node in container.iter() if node.tag in ('{'+ns+'}image','{'+ns+'}use')]
-            if len(leaves) != 1:
-                raise ValueError('Unexpected SVG mask structure')
-            node = leaves[0]
-            return ids[node.get(href)[1:]] if node.tag.endswith('use') else node
-        mask_image = image_node(mask)
-        target_image = image_node(group)
-        mask_pixels = Image.open(io.BytesIO(base64.b64decode(mask_image.get(href).split(',',1)[1]))).convert('L')
-        target_pixels = Image.open(io.BytesIO(base64.b64decode(target_image.get(href).split(',',1)[1]))).convert('RGBA')
-        if mask_pixels.size != target_pixels.size:
-            raise ValueError('SVG image/mask size mismatch')
-        target_pixels.putalpha(mask_pixels)
-        buffer = io.BytesIO()
-        target_pixels.save(buffer, format='PNG')
-        target_image.set(href, 'data:image/png;base64,'+base64.b64encode(buffer.getvalue()).decode())
-        del group.attrib['mask']
-    svg = ET.tostring(tree,encoding='unicode')
-    (images/'architecture.svg').write_text(svg,encoding='utf8')
-shutil.copyfile(args.figure,images/'architecture.pdf')
+for figure_source,figure_name,trim in [(args.figure,'architecture',(56,67,56,59)),(args.figure.with_name('teaser_v10.pdf'),'overview',(39,212,290,64))]:
+    with pymupdf.open(figure_source) as doc:
+        page = doc[0]
+        # Match each figure's manuscript crop without rasterizing.
+        left,bottom,right,top = trim
+        page.set_cropbox(pymupdf.Rect(left,top,page.rect.width-right,page.rect.height-bottom))
+        svg = page.get_svg_image(text_as_path=True)
+        # Bake each raster soft mask into PNG alpha. Keep all text/linework vector;
+        # avoid renderer-dependent SVG mask handling around the robot and icons.
+        ns = 'http://www.w3.org/2000/svg'
+        href = '{http://www.w3.org/1999/xlink}href'
+        ET.register_namespace('', ns)
+        ET.register_namespace('xlink','http://www.w3.org/1999/xlink')
+        tree = ET.fromstring(svg)
+        ids = {node.get('id'):node for node in tree.iter() if node.get('id')}
+        for group in tree.iter('{'+ns+'}g'):
+            if 'mask' not in group.attrib:
+                continue
+            mask = ids[group.get('mask')[5:-1]]
+            def image_node(container):
+                leaves = [node for node in container.iter() if node.tag in ('{'+ns+'}image','{'+ns+'}use')]
+                if len(leaves) != 1:
+                    raise ValueError('Unexpected SVG mask structure')
+                node = leaves[0]
+                return ids[node.get(href)[1:]] if node.tag.endswith('use') else node
+            mask_image = image_node(mask)
+            target_image = image_node(group)
+            mask_pixels = Image.open(io.BytesIO(base64.b64decode(mask_image.get(href).split(',',1)[1]))).convert('L')
+            target_pixels = Image.open(io.BytesIO(base64.b64decode(target_image.get(href).split(',',1)[1]))).convert('RGBA')
+            if mask_pixels.size != target_pixels.size:
+                raise ValueError('SVG image/mask size mismatch')
+            target_pixels.putalpha(mask_pixels)
+            buffer = io.BytesIO()
+            target_pixels.save(buffer, format='PNG')
+            target_image.set(href, 'data:image/png;base64,'+base64.b64encode(buffer.getvalue()).decode())
+            del group.attrib['mask']
+        svg = ET.tostring(tree,encoding='unicode')
+        (images/f'{figure_name}.svg').write_text(svg,encoding='utf8')
+    shutil.copyfile(figure_source,images/f'{figure_name}.pdf')
 
 ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
 video = repo/'assets/videos/project-overview.mp4'
@@ -71,6 +73,9 @@ commands = [
 for command in commands:
     subprocess.run([ffmpeg,'-hide_banner','-loglevel','error',*command],check=True)
 metadata = {
+    'overview_figure': {'source':'teaser_v10.pdf','svg':'assets/images/overview.svg',
+                        'pdf':'assets/images/overview.pdf','source_sha256':hashlib.sha256(args.figure.with_name('teaser_v10.pdf').read_bytes()).hexdigest(),
+                        'export':'Vector paths and embedded original images; fonts outlined; manuscript crop.'},
     'figure': {'source':args.figure.name,'svg':'assets/images/architecture.svg',
                'pdf':'assets/images/architecture.pdf','source_sha256':hashlib.sha256(args.figure.read_bytes()).hexdigest(),
                'export':'Vector paths and embedded original images; fonts outlined; manuscript crop.'},
@@ -86,5 +91,5 @@ metadata = {
     }
 }
 (repo/'assets/presentation-manifest.json').write_text(json.dumps(metadata,indent=2),encoding='utf8')
-print('Vector figure:',(images/'architecture.svg').stat().st_size,'bytes')
+print('Vector figures:', {name:(images/f'{name}.svg').stat().st_size for name in ('overview','architecture')}, 'bytes')
 print('Project video:',video.stat().st_size,'bytes; original audio retained')

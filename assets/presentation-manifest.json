@@ -1,4 +1,11 @@
 {
+  "overview_figure": {
+    "source": "teaser_v10.pdf",
+    "svg": "assets/images/overview.svg",
+    "pdf": "assets/images/overview.pdf",
+    "source_sha256": "105c7ed0c675ab7dece13d620c5abba7864713c9f103afd08892828dcc1c2e66",
+    "export": "Vector paths and embedded original images; fonts outlined; manuscript crop."
+  },
   "figure": {
     "source": "figure_architecture_v4.pdf",
     "svg": "assets/images/architecture.svg",

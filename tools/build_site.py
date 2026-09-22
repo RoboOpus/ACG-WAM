@@ -2,13 +2,14 @@
 from pathlib import Path
 from html import escape
 import json
+import hashlib
 
 ROOT = Path(__file__).resolve().parents[1]
 manifest = json.loads((ROOT/'assets/media-manifest.json').read_text(encoding='utf8'))
 presentation = json.loads((ROOT/'assets/presentation-manifest.json').read_text(encoding='utf8'))
 
 def video(src, poster, label, overview=False):
-    playback = 'preload="metadata"' if overview else 'muted loop preload="none"'
+    playback = 'autoplay muted loop preload="metadata"'
     return f'<video controls playsinline {playback} poster="{poster}" aria-label="{escape(label)}"><source src="{src}" type="video/mp4">Your browser does not support embedded video. <a href="{src}">Download the video</a>.</video>'
 
 real_tasks = [
@@ -38,6 +39,8 @@ bib='''@unpublished{liu2026acgwam,
   url    = {https://RoboOpus.github.io/ACG-WAM/}
 }'''
 overview=presentation['overview_video']
+css_version=hashlib.sha256((ROOT/'assets/site.css').read_bytes()).hexdigest()[:12]
+js_version=hashlib.sha256((ROOT/'assets/site.js').read_bytes()).hexdigest()[:12]
 html=f'''<!doctype html>
 <html lang="en">
 <head>
@@ -50,14 +53,14 @@ html=f'''<!doctype html>
 <meta property="og:type" content="website"><meta property="og:url" content="https://RoboOpus.github.io/ACG-WAM/">
 <meta property="og:image" content="https://RoboOpus.github.io/ACG-WAM/assets/videos/project-overview.jpg">
 <link rel="canonical" href="https://RoboOpus.github.io/ACG-WAM/"><link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/site.css"><script src="assets/site.js" defer></script>
+<link rel="stylesheet" href="assets/site.css?v={css_version}"><script src="assets/site.js?v={js_version}" defer></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="topbar"><div class="shell"><a class="brand" href="#top">ACG-WAM</a><nav aria-label="Main navigation"><a href="#overview">Project video</a><a href="#method">Method</a><a href="#real-world">Real robot</a><a href="#simulation">Simulation</a></nav></div></header>
 <main id="main">
 <section class="hero shell" id="top" aria-labelledby="paper-title">
-<h1 id="paper-title"><span>ACG-WAM:</span> World-Action Modeling<br> via Action-Conditioned Geometric Latent Prediction</h1>
+<h1 id="paper-title"><span class="title-line"><span class="project-name">ACG-WAM:</span> World-Action Modeling</span><span class="title-line">via Action-Conditioned Geometric Latent Prediction</span></h1>
 <p class="authors"><span>Jiangtao Liu<sup>*</sup></span><span>Zishang Xiang<sup>*</sup></span><span>Yage He</span><span>Lingguo Cui</span><span>Baihai Zhang</span><span>Runqi Chai</span><span>Senchun Chai<sup>†</sup></span></p>
 <p class="author-note"><sup>*</sup> Equal contribution. &nbsp; <sup>†</sup> Corresponding author.</p>
 <div class="links"><a class="button primary" href="assets/paper/acg-wam.pdf">Paper</a><a class="button" href="https://github.com/RoboOpus/ACG-WAM">Code</a><a class="button" href="https://huggingface.co/RoboOpus/ACG-WAM">Model</a></div>
@@ -65,8 +68,8 @@ html=f'''<!doctype html>
 </section>
 <section class="section shell" id="method" aria-labelledby="method-title">
 <h2 id="method-title">Method Overview</h2>
-<p>ACG-WAM learns to predict future geometric features from the current observation and intervening actions. Its ACG-JEPA objective uses a frozen VGGT teacher to encode current–future image pairs, providing multi-view targets at several prediction horizons. This supervision trains the shared visual embedding before temporal mixing; the teacher and auxiliary predictor are removed at inference.</p>
-<figure class="method-figure"><a href="assets/images/architecture.svg" aria-label="Open full-size Fig. 2"><img src="assets/images/architecture.svg" width="848" height="414" loading="lazy" decoding="async" alt="Figure 2. ACG-WAM training architecture. The Motus backbone shares its visual embedding with an action-conditioned geometric predictor supervised by frozen VGGT targets."></a><figcaption>Fig. 2. ACG-WAM training architecture. <a href="assets/images/architecture.pdf">View original PDF</a></figcaption></figure>
+<figure class="method-row"><a class="method-image" href="assets/images/overview.svg" aria-label="Open full-size Fig. 1"><img src="assets/images/overview.svg" width="2401" height="1196" loading="lazy" decoding="async" alt="Figure 1. Overview of ACG-WAM: geometric supervision during training, the inference path, and evaluation results."></a><figcaption class="method-copy"><h3>Action-Conditioned Geometric Prediction</h3><p>ACG-WAM connects robot actions to their geometric consequences. A frozen VGGT teacher provides targets from current and future observations, and ACG-JEPA learns to predict these targets from the current visual features and intervening actions.</p><p>The geometric objective improves the shared visual representation during training. The teacher and auxiliary predictor are removed at inference.</p></figcaption></figure>
+<figure class="method-row method-row-reverse"><a class="method-image" href="assets/images/architecture.svg" aria-label="Open full-size Fig. 2"><img src="assets/images/architecture.svg" width="848" height="414" loading="lazy" decoding="async" alt="Figure 2. ACG-WAM training architecture. The Motus backbone shares its visual embedding with an action-conditioned geometric predictor supervised by frozen VGGT targets."></a><figcaption class="method-copy"><h3>ACG-WAM Architecture</h3><p><strong>(a) Motus backbone.</strong> Understanding, video, and action streams interact through joint attention. Geometric supervision reaches the shared visual embedding before temporal mixing.</p><p><strong>(b) ACG-JEPA.</strong> An adapter and predictor combine current-frame features, intervening actions, and a prediction horizon. A frozen VGGT teacher jointly encodes current–future image pairs to supply multi-view geometric targets.</p></figcaption></figure>
 </section>
 <section class="section shell" id="real-world" aria-labelledby="real-title">
 <h2 id="real-title">Real-World Demonstrations</h2>
@@ -89,4 +92,4 @@ html=f'''<!doctype html>
 <footer class="shell"><a href="https://github.com/RoboOpus/ACG-WAM">ACG-WAM</a><a href="#top">Back to top</a></footer>
 </body></html>'''
 (ROOT/'index.html').write_text(html,encoding='utf8')
-print('Built demo-focused page: project video, vector Fig. 2, six real-robot demos and 24 simulation choices.')
+print('Built demo-focused page: project video, vector Figs. 1 and 2, six real-robot demos and 24 simulation choices.')
