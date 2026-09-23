@@ -32,7 +32,7 @@ for slug,title in sim_tasks:
     sim_cards.append(f'<article class="demo" data-sim-card data-base="{base}" data-title="{title}"><h3>{title}</h3>{video(base+"/demo_clean/episode0.mp4",base+"/demo_clean/episode0.jpg",title+" — clean, demonstration 1")}</article>')
 
 bib='''@unpublished{liu2026acgwam,
-  title  = {ACG-WAM: World-Action Modeling via Action-Conditioned Geometric Latent Prediction},
+  title  = {ACG-WAM: World Action Modeling via Action Conditioned Geometric Latent Prediction},
   author = {Liu, Jiangtao and Xiang, Zishang and He, Yage and Cui, Lingguo and Zhang, Baihai and Chai, Runqi and Chai, Senchun},
   year   = {2026},
   note   = {Manuscript},
@@ -45,11 +45,11 @@ html=f'''<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ACG-WAM: World-Action Modeling via Action-Conditioned Geometric Latent Prediction</title>
-<meta name="description" content="ACG-WAM project video, method, real-robot demonstrations and RoboTwin simulation.">
+<title>ACG-WAM: World Action Modeling via Action Conditioned Geometric Latent Prediction</title>
+<meta name="description" content="ACG-WAM project video, method, real robot demonstrations and RoboTwin simulation.">
 <meta name="theme-color" content="#ffffff">
-<meta property="og:title" content="ACG-WAM: World-Action Modeling">
-<meta property="og:description" content="World-Action Modeling via Action-Conditioned Geometric Latent Prediction. Project video and robot demonstrations.">
+<meta property="og:title" content="ACG-WAM: World Action Modeling">
+<meta property="og:description" content="World Action Modeling via Action Conditioned Geometric Latent Prediction. Project video and robot demonstrations.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://RoboOpus.github.io/ACG-WAM/">
 <meta property="og:image" content="https://RoboOpus.github.io/ACG-WAM/assets/videos/project-overview.jpg">
 <link rel="canonical" href="https://RoboOpus.github.io/ACG-WAM/"><link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -60,7 +60,7 @@ html=f'''<!doctype html>
 <header class="topbar"><div class="shell"><a class="brand" href="#top">ACG-WAM</a><nav aria-label="Main navigation"><a href="#overview">Project video</a><a href="#method">Method</a><a href="#real-world">Real robot</a><a href="#simulation">Simulation</a></nav></div></header>
 <main id="main">
 <section class="hero shell" id="top" aria-labelledby="paper-title">
-<h1 id="paper-title"><span class="title-line"><span class="project-name">ACG-WAM:</span> World-Action Modeling</span><span class="title-line">via Action-Conditioned Geometric Latent Prediction</span></h1>
+<h1 id="paper-title"><span class="title-line"><span class="project-name">ACG-WAM:</span> World Action Modeling</span><span class="title-line">via Action Conditioned Geometric Latent Prediction</span></h1>
 <p class="authors"><span>Jiangtao Liu<sup>*</sup></span><span>Zishang Xiang<sup>*</sup></span><span>Yage He</span><span>Lingguo Cui</span><span>Baihai Zhang</span><span>Runqi Chai</span><span>Senchun Chai<sup>†</sup></span></p>
 <p class="author-note"><sup>*</sup> Equal contribution. &nbsp; <sup>†</sup> Corresponding author.</p>
 <div class="links"><a class="button primary" href="assets/paper/acg-wam.pdf">Paper</a><a class="button" href="https://github.com/RoboOpus/ACG-WAM">Code</a><a class="button" href="https://huggingface.co/RoboOpus/ACG-WAM">Model</a></div>
@@ -68,11 +68,11 @@ html=f'''<!doctype html>
 </section>
 <section class="section shell" id="method" aria-labelledby="method-title">
 <h2 id="method-title">Method Overview</h2>
-<figure class="method-row"><a class="method-image" href="assets/images/overview.svg" aria-label="Open full-size Fig. 1"><img src="assets/images/overview.svg" width="2401" height="1196" loading="lazy" decoding="async" alt="Figure 1. ACG-WAM combines action-conditioned geometric prediction and multi-view distillation, evaluated in simulation and on a real robot."></a><figcaption class="method-copy"><h3>Action-Conditioned Geometric Prediction</h3><p>ACG-WAM learns to predict future geometric representations from current observations and intervening actions. Our ACG-JEPA objective combines prediction over multiple horizons with geometric distillation from head and wrist cameras to train the policy’s shared visual embedding.</p><p>We evaluate ACG-WAM on 50 RoboTwin 2.0 tasks and three real-robot tasks. Ablations on six simulation tasks examine the joint geometric targets, action conditioning, and multi-horizon supervision.</p></figcaption></figure>
-<figure class="method-row method-row-reverse"><a class="method-image" href="assets/images/architecture.svg" aria-label="Open full-size Fig. 2"><img src="assets/images/architecture.svg" width="848" height="414" loading="lazy" decoding="async" alt="Figure 2. ACG-JEPA supervises the MoT backbone’s shared visual embedding through action-conditioned, multi-horizon prediction of geometric targets from head and wrist cameras."></a><figcaption class="method-copy"><h3>ACG-WAM Architecture</h3><p><strong>Action-conditioned prediction.</strong> ACG-JEPA predicts geometric targets from current-frame features, intervening actions, and a temporal horizon. A frozen VGGT teacher jointly encodes current–future image pairs and supplies future-slot targets at multiple horizons.</p><p><strong>Multi-view geometric distillation.</strong> Head- and wrist-camera targets supervise the MoT backbone’s shared visual embedding before temporal mixing, so the predictor’s visual input contains only the current observation. The geometric loss updates this embedding alongside the video and action objectives; the teacher and auxiliary predictor are removed at inference.</p><p>We initialize the MoT backbone from a pretrained Motus backbone checkpoint.</p></figcaption></figure>
+<figure class="method-row"><a class="method-image" href="assets/images/overview.svg" aria-label="Open full size Fig. 1"><img src="assets/images/overview.svg" width="2401" height="1196" loading="lazy" decoding="async" alt="Figure 1. ACG-WAM combines geometric prediction conditioned on actions with distillation across camera views, evaluated in simulation and on a real robot."></a><figcaption class="method-copy"><h3>Geometric Prediction Conditioned on Actions</h3><p>ACG-WAM learns to predict future geometric representations from current observations and intervening actions. Our ACG-JEPA objective combines prediction over multiple horizons with geometric distillation from head and wrist cameras to train the policy’s shared visual embedding.</p><p>We evaluate ACG-WAM on 50 RoboTwin 2.0 tasks and three real robot tasks. Ablations on six simulation tasks examine the joint geometric targets, action conditioning, and supervision at multiple horizons.</p></figcaption></figure>
+<figure class="method-row method-row-reverse"><a class="method-image" href="assets/images/architecture.svg" aria-label="Open full size Fig. 2"><img src="assets/images/architecture.svg" width="848" height="414" loading="lazy" decoding="async" alt="Figure 2. ACG-JEPA supervises the MoT backbone’s shared visual embedding by predicting geometric targets from head and wrist cameras, conditioned on actions over multiple horizons."></a><figcaption class="method-copy"><h3>ACG-WAM Architecture</h3><p><strong>Prediction conditioned on actions.</strong> ACG-JEPA predicts geometric targets from features of the current frame, intervening actions, and a temporal horizon. A frozen VGGT teacher jointly encodes pairs of current and future images and supplies targets from the future slot at multiple horizons.</p><p><strong>Geometric distillation across views.</strong> Targets from head and wrist cameras supervise the MoT backbone’s shared visual embedding before temporal mixing, so the predictor’s visual input contains only the current observation. The geometric loss updates this embedding alongside the video and action objectives; the teacher and auxiliary predictor are removed at inference.</p></figcaption></figure>
 </section>
 <section class="section shell" id="real-world" aria-labelledby="real-title">
-<h2 id="real-title">Real-World Demonstrations</h2>
+<h2 id="real-title">Real Robot Demonstrations</h2>
 <p>ACG-WAM performs bimanual fruit placement, block stacking, and toy placement into a cup on TRON2 with WUJI hands. Block stacking and toy placement are shown with both the robot’s left and right arms.</p>
 {''.join(real_rows)}
 </section>
