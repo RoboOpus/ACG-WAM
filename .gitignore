@@ -50,3 +50,5 @@ real-world/
 *.hdf5
 *.log
 slurm-*.out
+/configs/*
+!/configs/robotwin_joint_full_from_motus_40k.yaml
