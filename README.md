@@ -2,9 +2,10 @@
 <h3 align="center">World-Action Modeling via Action-Conditioned Geometric Latent Prediction</h3>
 
 <p align="center">
-  Jiangtao Liu<sup>*</sup>, Zishang Xiang<sup>*</sup>, Yage He, Lingguo Cui,<br>
-  Baihai Zhang, Runqi Chai, and Senchun Chai<sup>†</sup><br>
-  <sub><sup>*</sup>Equal contribution. <sup>†</sup>Corresponding author.</sub>
+  Jiangtao Liu<sup>1,2,*</sup>, Zishang Xiang<sup>1,*</sup>, Yage He<sup>2</sup>, Lingguo Cui<sup>1</sup>,<br>
+  Baihai Zhang<sup>1</sup>, Runqi Chai<sup>1</sup>, and Senchun Chai<sup>1,†</sup><br>
+  <sup>1</sup>School of Automation, Beijing Institute of Technology &nbsp; <sup>2</sup>LimX Dynamics<br>
+  <sub><sup>*</sup>Equal contribution. <sup>†</sup>Corresponding author: <a href="mailto:chaisc97@bit.edu.cn">chaisc97@bit.edu.cn</a>.</sub>
 </p>
 
 <p align="center">
