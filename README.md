@@ -16,14 +16,13 @@
 </p>
 
 <p align="center">
-  <a href="#method"><img src="assets/readme/overview.webp" width="100%" alt="ACG-WAM overview: geometric supervision during training, the deployed policy, and benchmark results"></a>
+  <img src="assets/readme/overview.webp" width="100%" alt="ACG-WAM overview: geometric supervision during training, the deployed policy, and benchmark results">
 </p>
 
 **ACG-WAM** teaches a world-action model to predict the geometric consequences of actions. Built on [Motus](https://github.com/thu-ml/Motus), it learns from current observations, demonstrated actions, and geometric targets at multiple horizons, while keeping the backbone's inference path unchanged.
 
 <p align="center">
   <a href="#highlights">Highlights</a> ·
-  <a href="#method">Method</a> ·
   <a href="#demonstrations">Videos</a> ·
   <a href="#performance">Results</a> ·
   <a href="#installation">Installation</a> ·
@@ -41,29 +40,7 @@
 - **Strong simulation and real robot results.** ACG-WAM reaches **93.07%** mean success across clean and randomized RoboTwin 2.0 settings, and **85.00%** mean success on three real robot tasks.
 - **Training-time supervision.** Teacher targets are cached offline. The teacher, cache, adapter, and predictor are removed at deployment, adding **no auxiliary modules to inference**.
 
-## Method
-
-<p align="center">
-  <a href="https://RoboOpus.github.io/ACG-WAM/assets/images/architecture.svg"><img src="assets/readme/architecture.webp" width="100%" alt="ACG-WAM architecture: the three-stream Motus backbone and the action-conditioned geometric prediction branch"></a>
-</p>
-
-**ACG-JEPA** (Action-Conditioned Geometric Joint-Embedding Predictive Architecture) complements the backbone's video and action losses with a geometric prediction objective:
-
-1. **Construct a geometric target.** For each camera independently, frozen VGGT jointly encodes the current and future images. The future temporal slot is centered and pooled; the three views form a **96 × 768** target.
-2. **Predict from the current observation.** The student uses current-frame features from the shared patch embedding, an aligned action prefix, and a horizon embedding. Future images supply teacher targets only.
-3. **Train the shared visual representation.** The geometric loss updates the shared embedding alongside the base objectives. Deployment retains the trained policy's original observation and action interface.
-
-See [the paper, Section III](https://RoboOpus.github.io/ACG-WAM/assets/paper/acg-wam.pdf#page=3) for the objective and target construction, and [Joint Teacher Cache](#joint-teacher-cache) for the offline workflow.
-
 ## Demonstrations
-
-### Project Video
-
-<p align="center">
-  <a href="https://RoboOpus.github.io/ACG-WAM/#overview"><img src="assets/readme/project-overview.jpg" width="85%" alt="Watch the ACG-WAM project video"></a><br>
-  <a href="https://RoboOpus.github.io/ACG-WAM/#overview"><b>▶ Watch the project video</b></a> ·
-  <a href="https://RoboOpus.github.io/ACG-WAM/assets/videos/project-overview.mp4">MP4</a>
-</p>
 
 ### Real Robot
 
@@ -88,10 +65,6 @@ Successful executions on **TRON2 with WUJI hands**. The previews below play at *
 </table>
 
 ### RoboTwin 2.0
-
-<p align="center">
-  <a href="https://RoboOpus.github.io/ACG-WAM/#simulation"><img src="assets/readme/simulation-rollouts.webp" width="100%" alt="Successful randomized RoboTwin rollouts: Hanging Mug, Place A to B (Right), and Place Bread in Skillet"></a>
-</p>
 
 [▶ Browse simulation videos](https://RoboOpus.github.io/ACG-WAM/#simulation) across six tasks, with clean and randomized scenes and multiple demonstrations.
 
