@@ -12,6 +12,7 @@ Nothing in this module performs I/O: teacher targets are supplied by the caller.
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -19,6 +20,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+ACTION_CONDITION_SOURCES = ("full", "zero")
 TARGET_MODES = ("absolute", "residual", "joint_future_slot")
 
 
@@ -50,6 +52,7 @@ class GeometryJEPAConfig:
     predictor_num_heads: int = 8
     predictor_dropout: float = 0.0
     action_hidden_dim: int = 768
+    action_condition_source: str = "full"
 
     # Loss.
     # "residual" predicts ``u_{t+k} - u_t``. "joint_future_slot" directly
@@ -98,6 +101,11 @@ class GeometryJEPAConfig:
             raise ValueError(
                 f"target_mode must be one of {TARGET_MODES}, got {self.target_mode!r}"
             )
+        if self.action_condition_source not in ACTION_CONDITION_SOURCES:
+            raise ValueError(
+                "action_condition_source must be one of "
+                f"{ACTION_CONDITION_SOURCES}, got {self.action_condition_source!r}"
+            )
         if self.lr_scale <= 0:
             raise ValueError(
                 f"lr_scale must be > 0, got {self.lr_scale}; use lambda_geo=0 or "
@@ -110,7 +118,9 @@ class GeometryJEPAConfig:
         Everything that changes a parameter shape or the meaning of the teacher
         target. Purely optimisation-side knobs (`lambda_geo`, `lr_scale`,
         `freeze_wam_for_geo`, loss weights) are deliberately excluded so they can
-        be retuned across a resume.
+        be retuned across a resume. `action_condition_source` is checked
+        separately by `assert_checkpoint_compatible`: it changes training
+        semantics without changing the state-dict structure.
         """
         return {field: getattr(self, field) for field in CHECKPOINT_FINGERPRINT_FIELDS}
 
@@ -139,6 +149,21 @@ def assert_checkpoint_compatible(
         for field, value in expected.items()
         if field in saved and saved[field] != value
     ]
+    saved_action_source = saved.get("action_condition_source")
+    if saved_action_source is None:
+        warnings.warn(
+            "Geometry JEPA checkpoint has no action_condition_source; treating it "
+            "as legacy 'full' conditioning",
+            UserWarning,
+            stacklevel=2,
+        )
+        saved_action_source = "full"
+    if saved_action_source != current.action_condition_source:
+        mismatches.append(
+            "action_condition_source: "
+            f"checkpoint={saved_action_source!r} "
+            f"config={current.action_condition_source!r}"
+        )
     if mismatches:
         raise ValueError(
             "Geometry JEPA checkpoint is incompatible with the current config:\n  "

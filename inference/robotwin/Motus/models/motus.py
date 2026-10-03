@@ -1319,25 +1319,3 @@ class Motus(nn.Module):
 
         return predicted_frames, predicted_actions
     '''
-
-
-def test_motus():
-    """Test the complete model."""
-    print("Testing Motus...")
-
-    config = MotusConfig()
-
-    try:
-        model = Motus(config)
-        print("Model created successfully")
-
-        # Test parameter counting
-        total_params = sum(p.numel() for p in model.parameters())
-        print(f"Total parameters: {total_params / 1e9:.2f}B")
-
-    except Exception as e:
-        print(f"Model creation failed: {e}")
-        print("This is expected without actual pretrained weights")
-
-if __name__ == "__main__":
-    test_motus()

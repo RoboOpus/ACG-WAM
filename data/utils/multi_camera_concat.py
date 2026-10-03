@@ -89,6 +89,5 @@ if __name__ == "__main__":
         print(f"Expected shape: {get_concatenated_dimensions((h, w))}")
         
         # Save test result (optional)
-        # cv2.imwrite("test_concatenated.jpg", result)
     else:
         print("Concatenation failed")

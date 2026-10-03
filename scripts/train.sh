@@ -3,7 +3,7 @@
 # e.g., nccl, network, proxy, etc.
 
 TASK="robotwin"  # Define your task name here
-CONFIG_FILE="configs/robotwin.yaml"  # Define your dataset config path here
+CONFIG_FILE=${CONFIG_FILE:-"configs/robotwin_joint_full_from_motus_40k.yaml"}
 
 export OUTPUT_DIR="outputs/motus-${TASK}" # Define your output directory here
 

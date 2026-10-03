@@ -126,7 +126,7 @@ def choose_episode(index: dict, requested: str | None) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", default="configs/robotwin_joint.yaml")
+    parser.add_argument("--config", default="configs/robotwin_joint_full_from_motus_40k.yaml")
     parser.add_argument("--cache-dir", default=None)
     parser.add_argument("--vggt-checkpoint", default="pretrained_models/VGGT-1B")
     parser.add_argument("--episode-key", default=None)

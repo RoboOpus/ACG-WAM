@@ -59,8 +59,8 @@ export TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC=1800
 mkdir -p logs
 
 # Training Configuration - Define here to avoid duplication in worker
-CONFIG_FILE=${CONFIG_FILE:-"configs/robotwin.yaml"}
-RUN_NAME=${RUN_NAME:-"robotwin_test"}
+CONFIG_FILE=${CONFIG_FILE:-"configs/robotwin_joint_full_from_motus_40k.yaml"}
+RUN_NAME=${RUN_NAME:-"joint_full_seed42"}
 MASTER_PORT=${MASTER_PORT:-29500}
 
 echo "=========================================="

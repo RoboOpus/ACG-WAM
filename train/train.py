@@ -732,7 +732,7 @@ def main():
     
     # Configuration file
     parser.add_argument("--config", type=str, 
-                       default="configs/aloha_agilex_2.yaml",
+                       default="configs/robotwin_joint_full_from_motus_40k.yaml",
                        help="Path to configuration file")
     
     # System settings

@@ -52,6 +52,20 @@ real-world/
 slurm-*.out
 /configs/*
 !/configs/robotwin_joint_full_from_motus_40k.yaml
+!/configs/zero1.json
+!/configs/robotwin_joint_10task_8k.yaml
+!/configs/robotwin_short_only_10task_8k.yaml
+!/configs/robotwin_long_only_10task_8k.yaml
+!/configs/robotwin_residual_10task_8k.yaml
+!/configs/robotwin_no_action.yaml
+!/configs/robotwin_joint_no_action_6task_8k.yaml
+
+# Local research/deployment checks outside the public release.
+/inference/real_world/
+/tests/
+/scripts/*lambda0*
+/configs/*lambda0*
+/tools/diagnose_geometry_jepa.py
 
 # Curated README media (training artifacts remain ignored above).
 !/assets/readme/*.jpg

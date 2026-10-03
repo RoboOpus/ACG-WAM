@@ -6,7 +6,7 @@ from omegaconf import OmegaConf
 
 def main():
     parser = argparse.ArgumentParser(description="Export filtered training YAML to config.json in a checkpoint directory")
-    parser.add_argument("--yaml", required=True, help="Path to training YAML (e.g., configs/robotwin.yaml)")
+    parser.add_argument("--yaml", required=True, help="Path to training YAML (e.g., configs/robotwin_joint_full_from_motus_40k.yaml)")
     parser.add_argument("--ckpt_dir", required=True, help="Path to checkpoint directory (e.g., .../checkpoint_step_40000)")
     args = parser.parse_args()
 

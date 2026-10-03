@@ -663,6 +663,7 @@ class Motus(nn.Module):
                 f"queries={geo_config.num_queries}x{geo_config.hidden_dim}, "
                 f"lambda_geo={geo_config.lambda_geo}, "
                 f"horizons={geo_config.horizon_choices}, "
+                f"action_condition_source={geo_config.action_condition_source}, "
                 f"freeze_wam={geo_config.freeze_wam_for_geo}"
             )
 
@@ -1042,9 +1043,15 @@ class Motus(nn.Module):
         if geo_config.freeze_wam_for_geo:
             source = source.detach()
 
+        action_chunk = actions[:, :num_actions]
+        jepa_actions = (
+            torch.zeros_like(action_chunk)
+            if geo_config.action_condition_source == 'zero'
+            else action_chunk
+        )
         outputs = self.geometry_jepa(
             student_tokens=source,
-            actions=actions[:, :num_actions],
+            actions=jepa_actions,
             horizon=torch.full((batch,), horizon_k, dtype=torch.long, device=self.device),
             teacher_target=teacher_latents[:, target_slot],
             teacher_anchor=teacher_latents[:, 0],
@@ -1058,6 +1065,9 @@ class Motus(nn.Module):
             'geo_mse_loss': outputs['geo_mse_loss'].detach(),
             'geo_token_cos_loss': outputs['geo_token_cos_loss'].detach(),
             'geo_horizon': float(horizon_k),
+            'geo_action_condition_zero': float(
+                geo_config.action_condition_source == 'zero'
+            ),
         }
 
         copy_loss = outputs['geo_copy_loss']
@@ -1588,25 +1598,3 @@ class Motus(nn.Module):
 
         return predicted_frames, predicted_actions
     '''
-
-
-def test_motus():
-    """Test the complete model."""
-    print("Testing Motus...")
-
-    config = MotusConfig()
-
-    try:
-        model = Motus(config)
-        print("Model created successfully")
-
-        # Test parameter counting
-        total_params = sum(p.numel() for p in model.parameters())
-        print(f"Total parameters: {total_params / 1e9:.2f}B")
-
-    except Exception as e:
-        print(f"Model creation failed: {e}")
-        print("This is expected without actual pretrained weights")
-
-if __name__ == "__main__":
-    test_motus()

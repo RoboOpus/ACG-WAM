@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """Pre-compute the frozen VGGT teacher latent cache for Geometry JEPA.
 
-The default cache is keyed by ``(episode_key, absolute_frame_index)``. A config
-with ``target_mode: joint_future_slot`` instead writes a separate window-level
-cache with slots ``(static, *horizon_choices)``.
+Single-frame caches are keyed by ``(episode_key, absolute_frame_index)``. The
+default Joint config writes a separate window-level cache with slots
+``(static, *horizon_choices)``.
 
 Single GPU::
 
     python tools/precompute_vggt_cache.py \
-        --config configs/robotwin.yaml \
-        --cache-dir /mnt/workspace/Tao/cache/vggt_teacher_robotwin \
+        --config configs/robotwin_joint_full_from_motus_40k.yaml \
+        --cache-dir ./cache/vggt_teacher_robotwin_joint_future_slot_v1 \
         --vggt-checkpoint pretrained_models/VGGT-1B
 
 Multi GPU (one process per shard, then merge)::
 
     for i in 0 1 2 3; do
         CUDA_VISIBLE_DEVICES=$i python tools/precompute_vggt_cache.py \
-            --config configs/robotwin.yaml --cache-dir <dir> \
+            --config configs/robotwin_joint_full_from_motus_40k.yaml --cache-dir <dir> \
             --num-shards 4 --shard-id $i &
     done; wait
     python tools/precompute_vggt_cache.py --cache-dir <dir> --merge-index
@@ -330,7 +330,7 @@ def write_frame_counts(cache_dir: Path, index: Dict[str, Dict]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=str, default="configs/robotwin.yaml")
+    parser.add_argument("--config", type=str, default="configs/robotwin_joint_full_from_motus_40k.yaml")
     parser.add_argument("--cache-dir", type=str, required=True)
     parser.add_argument(
         "--vggt-checkpoint", type=str, default="pretrained_models/VGGT-1B"

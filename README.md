@@ -29,6 +29,7 @@
   <a href="#installation">Installation</a> ·
   <a href="#model-downloads">Models</a> ·
   <a href="#training">Training</a> ·
+  <a href="#ablation-configurations">Ablations</a> ·
   <a href="#robotwin-evaluation">Evaluation</a> ·
   <a href="#citation">Citation</a>
 </p>
@@ -129,7 +130,7 @@ The task averages exceed Motus by **10.00 points in SR** and **9.17 points in PC
 <details>
 <summary><b>Ablations: geometric targets, action conditioning, and prediction horizons</b></summary>
 
-All variants train for **8k updates on the same six tasks**, with 100 evaluation episodes per task per setting. These results are separate from the 50-task benchmark above; see Tables III–IV in the paper.
+All variants reported in the paper train for **8k updates on the same six tasks**, with 100 evaluation episodes per task per setting. These results are separate from the 50-task benchmark above; see Tables III–IV in the paper. See [Ablation Configurations](#ablation-configurations) for the released recipes and the provenance of the No-Action configuration.
 
 | Variant | Clean | Randomized | Mean |
 | :--- | ---: | ---: | ---: |
@@ -353,7 +354,7 @@ torchrun --standalone --nproc_per_node=4 train/train.py \
     --report_to tensorboard
 ```
 
-Use this explicit command for the released recipe. Some inherited shell launchers still default to other experiment configurations that are not distributed in this release; inspect and adapt them before use.
+The Python training entry point and shell launchers default to this published main configuration. SLURM scripts also require your cluster paths, environment, and resource settings.
 
 | Training setting | Value |
 | --- | --- |
@@ -382,6 +383,50 @@ tensorboard --logdir checkpoints/robotwin_joint_full_from_motus_40k/joint_full_s
 Full training checkpoints include optimizer state and are substantially larger than the downloadable model. Before a smoke run, lower `training.max_steps`, restrict the dataset consistently with its cache, and use a separate `system.checkpoint_dir`. Do not start a full 40k run just to test installation.
 
 For an **exact resume**, set `resume.checkpoint_path` to a complete local trainer checkpoint and set `finetune.checkpoint_path: null`. Preserve the compatible model and JEPA configuration. The model-only Hugging Face download is not an exact-resume checkpoint.
+
+## Ablation Configurations
+
+The six-task recipes use `handover_mic`, `hanging_mug`, `move_can_pot`, `place_mouse_pad`, `put_object_cabinet`, and `scan_object`. The historical `_10task` filenames are preserved; their `dataset.task_names` lists select **six tasks**.
+
+| Recipe | Configuration | Target | Horizons | Actions in JEPA | Updates / tasks |
+| --- | --- | --- | --- | --- | --- |
+| Joint baseline | [`robotwin_joint_10task_8k.yaml`](configs/robotwin_joint_10task_8k.yaml) | Joint | 1, 2, 4, 8 | Full | 8k / six |
+| Short only | [`robotwin_short_only_10task_8k.yaml`](configs/robotwin_short_only_10task_8k.yaml) | Joint | 1 | Full | 8k / six |
+| Long only | [`robotwin_long_only_10task_8k.yaml`](configs/robotwin_long_only_10task_8k.yaml) | Joint | 8 | Full | 8k / six |
+| Endpoint residual | [`robotwin_residual_10task_8k.yaml`](configs/robotwin_residual_10task_8k.yaml) | Residual | 1, 2, 4, 8 | Full | 8k / six |
+| No-Action, original recipe | [`robotwin_no_action.yaml`](configs/robotwin_no_action.yaml) | Residual | 1, 2, 4, 8 | Zero | 40k / all |
+| No-Action, aligned Joint recipe | [`robotwin_joint_no_action_6task_8k.yaml`](configs/robotwin_joint_no_action_6task_8k.yaml) | Joint | 1, 2, 4, 8 | Zero | 8k / six |
+
+**No-Action provenance:** `robotwin_no_action.yaml` preserves the supplied experiment settings, with portable paths. It uses residual targets, all tasks, and 40k updates, so it does not directly reproduce the paper's six-task, 8k Joint No-Action row. The aligned Joint file is derived from the six-task Joint baseline by changing only `geometry_jepa.action_condition_source` to `zero`; it has not been verified as the exact configuration of that reported run.
+
+All recipes in this table initialize from the experiment's full `./pretrained_models/Motus_robotwin2` checkpoint with `finetune.load_full_checkpoint: true`. Supply that initialization checkpoint and update dataset/model/cache paths before running. This initialization differs from the main 40k recipe's partial loading of pretrained Motus. The downloadable ACG-WAM model is the trained 40k policy, not this ablation initialization checkpoint.
+
+`geometry_jepa.action_condition_source` defaults to `full`. Setting it to `zero` zeros the aligned action prefix passed to the auxiliary geometric predictor; the backbone's action targets and losses remain unchanged. Full and zero modes can initialize new fine-tuning runs from compatible model weights. Exact resume checks require matching action conditioning; older checkpoint metadata without this field is treated as `full` with a warning.
+
+The Joint baseline, Short, Long, and aligned No-Action recipes can share a completed Joint cache containing horizons `1, 2, 4, 8`, provided it covers their dataset episodes. The loader selects the requested horizon slots. Generate and audit that cache using the Joint baseline configuration and the commands in [Joint Teacher Cache](#joint-teacher-cache).
+
+Residual recipes need a separate **single-frame** cache with protocol `vggt_tlayout_3view_percam_q32_d768_centered_v3`. For the six-task residual recipe:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python tools/precompute_vggt_cache.py \
+    --config configs/robotwin_residual_10task_8k.yaml \
+    --cache-dir ./cache/vggt_teacher_robotwin \
+    --vggt-checkpoint ./pretrained_models/VGGT-1B \
+    --target-mode single_frame \
+    --batch-size 8
+```
+
+For the original all-task No-Action recipe, use `configs/robotwin_no_action.yaml` during cache generation to cover all its episodes. Keep caches generated for different dataset scopes in separate directories, and set each YAML's `geometry_jepa.cache_dir` accordingly.
+
+Launch an ablation by selecting its YAML, for example:
+
+```bash
+torchrun --standalone --nproc_per_node=4 train/train.py \
+    --deepspeed configs/zero1.json \
+    --config configs/robotwin_joint_no_action_6task_8k.yaml \
+    --run_name joint_no_action_6task_8k_seed42 \
+    --report_to tensorboard
+```
 
 ## RoboTwin Evaluation
 
@@ -418,28 +463,16 @@ bash "$ROBOTWIN_ROOT/policy/Motus/eval.sh"
 
 The policy loader uses `strict=False` with its JEPA-free deployment model. Auxiliary JEPA parameters in the training checkpoint are not needed at deployment; neither VGGT nor the teacher cache is used for action inference. The WAN VAE/text encoder and Qwen processor assets are still required.
 
-Robot-specific deployment examples are also provided under [`inference/real_world/Motus`](inference/real_world/Motus). These are adaptation starting points, not a claim that the released RoboTwin checkpoint can control an arbitrary physical robot without matching observations, action conventions, calibration, and task-specific validation.
+The public deployment code covers RoboTwin. Real robot results and demonstration videos are presented above.
 
-## Validation and Troubleshooting
+## Troubleshooting
 
 <details>
-<summary><b>Validation commands and common setup issues</b></summary>
-
-Geometry unit tests do not require downloaded model checkpoints:
-
-```bash
-python -m pytest tests/test_geometry_jepa.py -q
-```
-
-Optional real-model contract tests need CUDA and the corresponding local pretrained models; they skip when those prerequisites are absent:
-
-```bash
-python -m pytest tests/test_real_model_contracts.py -q -s
-```
+<summary><b>Common setup issues</b></summary>
 
 | Symptom | Check |
 | --- | --- |
-| Missing experiment or DeepSpeed config | Use the two published config files and the explicit training command above; do not use inherited launcher defaults. |
+| Missing experiment or DeepSpeed config | Pass a published experiment YAML with `--config` and `configs/zero1.json` with `--deepspeed`. |
 | Cache manifest, protocol, or horizon mismatch | Check the Joint protocol, dataset coverage, and completed shard merge. Do not disable cache validation. |
 | Out of GPU memory during cache generation | Reduce the cache generator's `--batch-size`; teacher encoding and policy training have different memory requirements. |
 | Out of GPU memory during training | Check GPU count and ZeRO-1 setup. Reduce per-GPU micro-batch size and compensate with gradient accumulation if preserving global batch 256. |
