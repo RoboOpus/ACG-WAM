@@ -1,0 +1,91 @@
+{
+  "description": "Curated README media. Diagram and video sources are published on the project website; original source paths are relative to the research workspace. GIF previews show complete clips at 2x speed, 8 fps, and 400 px width.",
+  "website_source_commit": "81dac80aec2981c7ce0eda64be4cb7b3f551d465",
+  "assets": [
+    {
+      "file": "architecture.webp",
+      "bytes": 256132,
+      "dimensions": [
+        2401,
+        1173
+      ],
+      "sha256": "828938e5a0675782179a80176fc52b703f28b551752c2e808191cac04f4b3c39",
+      "source": "https://RoboOpus.github.io/ACG-WAM/assets/images/architecture.webp"
+    },
+    {
+      "file": "block-stacking.gif",
+      "bytes": 1844544,
+      "dimensions": [
+        400,
+        225
+      ],
+      "sha256": "1ec4b8d39decbb667d1aed2f50f9e561d71befa12c57344ba8c751d0727798a2",
+      "frames": 41,
+      "duration_seconds": 5.13,
+      "playback_speed": 2,
+      "source": "https://RoboOpus.github.io/ACG-WAM/assets/videos/real/2/IMG_6661.mp4",
+      "original_source": "real-world/成功视频/左手叠方块.MOV",
+      "original_sha256": "900fc7ea77ec08fbef1230e8f63c13127e51f5d0c538ec252feaa102b6a4cadc"
+    },
+    {
+      "file": "fruit-placement.gif",
+      "bytes": 2564222,
+      "dimensions": [
+        400,
+        225
+      ],
+      "sha256": "e2c75a2d2d7baf2432666faca9f7f4bd52c01ea2afb6c220fc48bb236a393767",
+      "frames": 51,
+      "duration_seconds": 6.38,
+      "playback_speed": 2,
+      "source": "https://RoboOpus.github.io/ACG-WAM/assets/videos/real/1/IMG_6668.mp4",
+      "original_source": "real-world/成功视频/放水果进盘子2.MOV",
+      "original_sha256": "f7503bf6a1b71be45222420435acd4e0b7bb8456083c441063504d16b47faf06"
+    },
+    {
+      "file": "overview.webp",
+      "bytes": 221560,
+      "dimensions": [
+        2401,
+        1196
+      ],
+      "sha256": "495b700de12e4e7c7d958cacc0137e958158e1f5aa9fb0b9d3513b2dd45a9143",
+      "source": "https://RoboOpus.github.io/ACG-WAM/assets/images/overview.webp"
+    },
+    {
+      "file": "project-overview.jpg",
+      "bytes": 221276,
+      "dimensions": [
+        1280,
+        720
+      ],
+      "sha256": "3d41c83417a10c50cea7c3b0e170de52f50289bc8b3e02ea57ace070572d6344",
+      "source": "https://RoboOpus.github.io/ACG-WAM/assets/videos/project-overview.jpg"
+    },
+    {
+      "file": "simulation-rollouts.webp",
+      "bytes": 69598,
+      "dimensions": [
+        1800,
+        950
+      ],
+      "sha256": "e47731ae61bfb2f45c08c57649bc11680dac4cb96440b5b340208e0e2363740a",
+      "source": "figures/simulation_rollouts.png"
+    },
+    {
+      "file": "toy-placement.gif",
+      "bytes": 1407134,
+      "dimensions": [
+        400,
+        225
+      ],
+      "sha256": "d7594eaa7d254659368220c0221aadf9590db097ba441c7f6f70676c5b12561f",
+      "frames": 27,
+      "duration_seconds": 3.38,
+      "playback_speed": 2,
+      "source": "https://RoboOpus.github.io/ACG-WAM/assets/videos/real/3/IMG_6651.mp4",
+      "original_source": "real-world/成功视频/左手小熊放进杯子2.MOV",
+      "original_sha256": "193f7df93dc37d1991961ae25b7d8118fd6c1a1f854acd31715f6f696ca40c0e"
+    }
+  ]
+}

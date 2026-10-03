@@ -52,3 +52,7 @@ real-world/
 slurm-*.out
 /configs/*
 !/configs/robotwin_joint_full_from_motus_40k.yaml
+
+# Curated README media (training artifacts remain ignored above).
+!/assets/readme/*.jpg
+!/assets/readme/*.gif
