@@ -63,7 +63,7 @@ html=f'''<!doctype html>
 <h1 id="paper-title"><span class="title-line"><span class="project-name">ACG-WAM:</span> World Action Modeling</span><span class="title-line">via Action Conditioned Geometric Latent Prediction</span></h1>
 <p class="authors"><span>Jiangtao Liu<sup>*</sup></span><span>Zishang Xiang<sup>*</sup></span><span>Yage He</span><span>Lingguo Cui</span><span>Baihai Zhang</span><span>Runqi Chai</span><span>Senchun Chai<sup>†</sup></span></p>
 <p class="author-note"><sup>*</sup> Equal contribution. &nbsp; <sup>†</sup> Corresponding author.</p>
-<div class="links"><a class="button primary" href="assets/paper/acg-wam.pdf">Paper</a><a class="button" href="https://github.com/RoboOpus/ACG-WAM">Code</a><a class="button" href="https://huggingface.co/RoboOpus/ACG-WAM">Model</a></div>
+<div class="links"><a class="button primary" href="https://arxiv.org/abs/2610.06965">Paper</a><a class="button" href="https://github.com/RoboOpus/ACG-WAM">Code</a><a class="button" href="https://huggingface.co/RoboOpus/ACG-WAM">Model</a></div>
 <div class="overview-video" id="overview">{video(overview['src'],overview['poster'],'ACG-WAM project overview',overview=True)}</div>
 </section>
 <section class="section shell" id="method" aria-labelledby="method-title">
