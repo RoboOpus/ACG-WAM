@@ -45,7 +45,7 @@
 
 ### Real Robot
 
-Successful executions on **TRON2 with WUJI hands**. The previews below play at **2× speed**; click a preview for the full video at its original playback speed. Left and right refer to the robot's arms.
+Successful executions on **TRON2 with grippers**. The previews below play at **2× speed**; click a preview for the full video at its original playback speed. Left and right refer to the robot's arms.
 
 <table>
   <tr>
@@ -90,7 +90,7 @@ ACG-WAM improves on Motus by **4.80 percentage points** in clean scenes and **5.
 
 ### Real Robot — Three Tasks
 
-Results from [Table II of the paper](https://RoboOpus.github.io/ACG-WAM/assets/paper/acg-wam.pdf#page=7) on TRON2 with WUJI hands. Each policy is fine-tuned for **15k updates** using **100 demonstrations per task**, then evaluated over **20 trials per task**. SR is full task success; PCS is partial completion score, normalized from scores of 0, 1, or 2.
+Results from [Table II of the paper](https://RoboOpus.github.io/ACG-WAM/assets/paper/acg-wam.pdf#page=7) on TRON2 with grippers. Each policy is fine-tuned for **15k updates** using **100 demonstrations per task**, then evaluated over **20 trials per task**. SR is full task success; PCS is partial completion score, normalized from scores of 0, 1, or 2.
 
 | Method | Fruit Placement SR | Block Stacking SR | Toy into Cup SR | Average SR | Average PCS |
 | :--- | ---: | ---: | ---: | ---: | ---: |
