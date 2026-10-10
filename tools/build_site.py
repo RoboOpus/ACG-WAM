@@ -73,7 +73,7 @@ html=f'''<!doctype html>
 </section>
 <section class="section shell" id="real-world" aria-labelledby="real-title">
 <h2 id="real-title">Real Robot Demonstrations</h2>
-<p>ACG-WAM performs bimanual fruit placement, block stacking, and toy placement into a cup on TRON2 with WUJI hands. Block stacking and toy placement are shown with both the robot’s left and right arms.</p>
+<p>ACG-WAM performs bimanual fruit placement, block stacking, and toy placement into a cup on TRON2 with grippers. Block stacking and toy placement are shown with both the robot’s left and right arms.</p>
 {''.join(real_rows)}
 </section>
 <section class="section shell" id="simulation" aria-labelledby="sim-title">
